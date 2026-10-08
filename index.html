@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Dashboard KICAU - Bank Indonesia NTB</title>
+    <!-- Font Google: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================================
+           COLOR SCHEME & UNSUR BUDAYA NTB (LOMBOK & SUMBAWA)
+           ========================================================= */
+        :root {
+            --bi-navy: #003366;          /* Primary BI Blue */
+            --bi-blue-light: #004d99;    /* Accent Blue */
+            --ntb-terracotta: #C85A32;   /* Warna Terakota Khas Gerabah/Tenun NTB */
+            --ntb-gold: #DAA520;         /* Emas Motif Tenun Songket Subahnale */
+            --ntb-gold-dark: #B8860B;
+            --bi-silver: #F0F4F8;        /* Silver Light */
+            --bi-gray-border: #D1D5DB;
+            --bg-main: #F8FAFC;          /* Clean Off-White */
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --shadow-sm: 0 2px 4px rgba(0, 51, 102, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 51, 102, 0.08);
+            --shadow-lg: 0 10px 25px rgba(0, 51, 102, 0.12);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.25s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-main);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* MOTIF SONGKET NTB SVG PATTERN (Subahnale Pattern Background) */
+        .ntb-songket-border {
+            height: 6px;
+            width: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--ntb-terracotta),
+                var(--ntb-terracotta) 10px,
+                var(--ntb-gold) 10px,
+                var(--ntb-gold) 20px,
+                var(--bi-navy) 20px,
+                var(--bi-navy) 30px
+            );
+        }
+
+        /* LOGO STYLING */
+        .brand-logo-bi {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .brand-logo-kicau {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* =========================================================
+           1. HALAMAN LOGIN
+           ========================================================= */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bi-navy) 0%, #001A33 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .login-card {
+            background: #FFFFFF;
+            width: 460px;
+            padding: 0 0 35px 0;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .login-card-content {
+            padding: 30px 40px 0 40px;
+        }
+
+        .login-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: #FFFFFF;
+            padding: 10px;
+        }
+
+        .login-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--bi-navy);
+            margin-bottom: 5px;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--bi-navy);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--bi-gray-border);
+            border-radius: 8px;
+            font-size: 13.5px;
+            background-color: #FAFAFA;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--bi-navy);
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue-light));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #002244, var(--bi-navy));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* =========================================================
+           2. MAIN DASHBOARD LAYOUT
+           ========================================================= */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 290px;
+            background-color: #FFFFFF;
+            border-right: 1px solid var(--bi-gray-border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-brand {
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #FFFFFF;
+        }
+
+        .sidebar-menu {
+            padding: 20px 15px;
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .menu-category {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--ntb-terracotta);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            padding: 16px 12px 8px;
+        }
+
+        .menu-item {
+            margin-bottom: 4px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-dark);
+            font-size: 13.5px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .menu-link:hover {
+            background-color: var(--bi-silver);
+            color: var(--bi-navy);
+        }
+
+        .menu-link.active {
+            background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue-light));
+            color: #FFFFFF;
+            box-shadow: var(--shadow-md);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+        }
+
+        .sidebar-user {
+            padding: 16px 20px;
+            border-top: 1px solid var(--bi-silver);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #FAFAFA;
+        }
+
+        .user-details h5 {
+            font-size: 13px;
+            color: var(--bi-navy);
+            font-weight: 700;
+        }
+
+        .user-details p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            color: #DC2626;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* MAIN CONTENT */
+        .main-wrapper {
+            margin-left: 290px;
+            flex-grow: 1;
+            padding: 30px 40px;
+            background-color: var(--bg-main);
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--bi-silver);
+            position: relative;
+        }
+
+        .header-title h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--bi-navy);
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .badge-live {
+            background-color: #ECFDF5;
+            color: #059669;
+            border: 1px solid #A7F3D0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot-green {
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* CARDS & TABLES */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--bi-gray-border);
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bi-navy), var(--ntb-gold), var(--ntb-terracotta));
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bi-navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border: 1px solid var(--bi-gray-border);
+            border-top: 4px solid var(--bi-navy);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card.gold { border-top-color: var(--ntb-gold); }
+        .stat-card.terracotta { border-top-color: var(--ntb-terracotta); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--bi-navy);
+            margin: 8px 0;
+        }
+
+        /* TABLES */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background-color: var(--bi-navy);
+            color: #FFFFFF;
+            padding: 12px 14px;
+            font-weight: 700;
+        }
+
+        .custom-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--bi-silver);
+            color: var(--text-dark);
+        }
+
+        .custom-table tr:hover {
+            background-color: #F1F5F9;
+        }
+
+        /* BADGES */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-warning { background-color: #FEF3C7; color: #D97706; }
+        .badge-success { background-color: #D1FAE5; color: #059669; }
+        .badge-danger { background-color: #FEE2E2; color: #DC2626; }
+        .badge-info { background-color: #E0F2FE; color: #0284C7; }
+
+        /* TABS */
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bi-silver);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: var(--bi-silver);
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--bi-navy);
+            color: #FFFFFF;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* FORM GRID */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        /* PAGE VIEWS SWITCHING */
+        .page-view {
+            display: none;
+        }
+
+        .page-view.active {
+            display: block;
+        }
+
+        /* BUTTON SMALL */
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-approve { background-color: #10B981; color: white; }
+        .btn-approve:hover { background-color: #059669; }
+
+        /* AI CHAT CONTAINER */
+        .ai-chat-box {
+            background-color: #F8FAFC;
+            border: 1px solid var(--bi-gray-border);
+            border-radius: 12px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .chat-msg {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-msg.ai .msg-content {
+            background-color: #E0F2FE;
+            color: #0369A1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            max-width: 80%;
+            border-left: 4px solid var(--bi-navy);
+        }
+
+        .chat-msg.user {
+            justify-content: flex-end;
+        }
+
+        .chat-msg.user .msg-content {
+            background-color: var(--bi-navy);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            max-width: 80%;
+        }
+
+        /* DIRECT LINKS CARDS */
+        .link-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            background: #FFFFFF;
+            border: 1px solid var(--bi-gray-border);
+            border-left: 5px solid var(--ntb-gold);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .link-card:hover {
+            transform: translateX(5px);
+            border-color: var(--bi-navy);
+            box-shadow: var(--shadow-md);
+        }
+
+        .link-info h4 {
+            font-size: 15px;
+            color: var(--bi-navy);
+            margin-bottom: 4px;
+        }
+
+        .link-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         1. HALAMAN LOGIN (OVERLAY DEMO)
+         ========================================================= -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <!-- MOTIF SONGKET BORDER NTB -->
+            <div class="ntb-songket-border"></div>
+
+            <div class="login-card-content">
+                <div class="login-logos">
+                    <!-- LOGO BANK INDONESIA (SVG Vector Presisi Resmi) -->
+                    <svg width="150" height="42" viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="40" cy="40" r="35" fill="#003366"/>
+                        <path d="M28 22H42C48 22 53 25 53 30C53 34 50 37 46 38C51 39 55 42 55 48C55 54 49 58 42 58H28V22ZM37 34H41C44 34 46 33 46 30C46 27 44 26 41 26H37V34ZM37 50H42C45 50 48 48 48 45C48 41 45 40 42 40H37V50Z" fill="white"/>
+                        <path d="M58 22H66V58H58V22Z" fill="white"/>
+                        <text x="85" y="44" fill="#003366" font-family="Arial" font-weight="bold" font-size="20" letter-spacing="0.5">BANK INDONESIA</text>
+                        <text x="86" y="58" fill="#C85A32" font-family="Arial" font-weight="bold" font-size="8" letter-spacing="1.2">KPw PROVINSI NUSA TENGGARA BARAT</text>
+                    </svg>
+                    
+                    <!-- LOGO KICAU (SVG Vector Presisi Resmi) -->
+                    <svg width="100" height="45" viewBox="0 0 160 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="40" cy="40" r="32" stroke="#0A7F85" stroke-width="4"/>
+                        <circle cx="40" cy="40" r="16" stroke="#DAA520" stroke-width="5"/>
+                        <path d="M50 15C65 15 75 25 75 40C75 60 55 70 40 70" stroke="#0A7F85" stroke-width="4" fill="none"/>
+                        <text x="82" y="45" fill="#003366" font-family="Arial" font-weight="bold" font-size="22">KICAU</text>
+                        <text x="83" y="58" fill="#B8860B" font-family="Arial" font-weight="bold" font-size="7">PENGADAAN UNGGUL</text>
+                    </svg>
+                </div>
+
+                <div class="login-title">Aplikasi KICAU NTB</div>
+                <div class="login-subtitle">Kendali Informasi Catatan Pengadaan Langsung</div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Username / NIP BI</label>
+                        <input type="text" id="username" placeholder="Masukkan Username / NIP" value="admin.ntb" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" value="password123" required>
+                    </div>
+                    <button type="submit" class="btn-primary">MASUK APLIKASI</button>
+                </form>
+
+                <div class="login-footer">
+                    &copy; 2026 Bank Indonesia KPw NTB — Lombok & Sumbawa Edition
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         2. DASHBOARD APLIKASI UTAMA
+         ========================================================= -->
+    <div class="app-container">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="ntb-songket-border"></div>
+            <div class="sidebar-brand">
+                <!-- LOGO BANK INDONESIA SVG -->
+                <svg width="120" height="34" viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="40" cy="40" r="35" fill="#003366"/>
+                    <path d="M28 22H42C48 22 53 25 53 30C53 34 50 37 46 38C51 39 55 42 55 48C55 54 49 58 42 58H28V22ZM37 34H41C46 34 46 33 46 30C46 27 44 26 41 26H37V34ZM37 50H42C45 50 48 48 48 45C48 41 45 40 42 40H37V50Z" fill="white"/>
+                    <path d="M58 22H66V58H58V22Z" fill="white"/>
+                    <text x="85" y="44" fill="#003366" font-family="Arial" font-weight="bold" font-size="22">BANK INDONESIA</text>
+                </svg>
+
+                <!-- LOGO KICAU SVG -->
+                <svg width="85" height="38" viewBox="0 0 160 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="40" cy="40" r="32" stroke="#0A7F85" stroke-width="4"/>
+                    <circle cx="40" cy="40" r="16" stroke="#DAA520" stroke-width="5"/>
+                    <text x="82" y="48" fill="#003366" font-family="Arial" font-weight="bold" font-size="24">KICAU</text>
+                </svg>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a class="menu-link active" onclick="switchPage('dashboard-main', this)">
+                        <span class="menu-icon">📊</span>
+                        <span>Dashboard Utama</span>
+                    </a>
+                </li>
+
+                <li class="menu-category">Menu Pengadaan</li>
+
+                <!-- MENU 1: PLANNING PENGADAAN -->
+                <li class="menu-item">
+                    <a class="menu-link" onclick="switchPage('menu-planning', this)">
+                        <span class="menu-icon">📝</span>
+                        <span>Planning Pengadaan</span>
+                    </a>
+                </li>
+
+                <!-- MENU 2: DO (PELAKSANAAN MULTI-LAYER) -->
+                <li class="menu-item">
+                    <a class="menu-link" onclick="switchPage('menu-do', this)">
+                        <span class="menu-icon">⚡</span>
+                        <span>DO (Pelaksanaan Multi-layer)</span>
+                    </a>
+                </li>
+
+                <!-- MENU 4: EVALUATED DAN LITERASI -->
+                <li class="menu-item">
+                    <a class="menu-link" onclick="switchPage('menu-evaluated', this)">
+                        <span class="menu-icon">🚨</span>
+                        <span>Evaluated & Literasi</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="user-details">
+                    <h5 id="loggedInUser">User Pengadaan BI</h5>
+                    <p>KPw BI Provinsi NTB</p>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Keluar</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-wrapper">
+            
+            <!-- HEADER TOP BAR WITH NTB ACCENT -->
+            <div class="top-header">
+                <div class="header-title">
+                    <h2 id="pageTitleDisplay">Dashboard Utama Monitoring Realtime</h2>
+                    <p>Sistem Informasi Kendali Catatan Pengadaan Langsung — KPw BI NTB (Lombok & Sumbawa)</p>
+                </div>
+                <div class="badge-live">
+                    <span class="dot-green"></span>
+                    Realtime System Active
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 PAGE VIEW 0: DASHBOARD UTAMA
+                 ========================================================= -->
+            <div id="dashboard-main" class="page-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Inisiasi Pengadaan</div>
+                        <div class="stat-value" id="statInisiasi">18</div>
+                        <span class="badge badge-info">Tahun 2026</span>
+                    </div>
+                    <div class="stat-card gold">
+                        <div class="stat-label">Disetujui / BPR Active</div>
+                        <div class="stat-value" id="statDisetujui">12</div>
+                        <span class="badge badge-success">Siap Pelaksanaan</span>
+                    </div>
+                    <div class="stat-card terracotta">
+                        <div class="stat-label">Early Warning (EWS)</div>
+                        <div class="stat-value">3</div>
+                        <span class="badge badge-danger">Perlu Tindakan</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-flex">
+                        <div class="card-title">
+                            <span>📡</span> Monitoring Real-Time Pengadaan & Status Dokumen
+                        </div>
+                    </div>
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>ID Transaksi</th>
+                                <th>Nama Pengadaan / Barang</th>
+                                <th>Satuan Kerja</th>
+                                <th>Cara Pengadaan</th>
+                                <th>Nominal (IDR)</th>
+                                <th>Status IVRA / Approval</th>
+                                <th>Status Dokumen & Pekerjaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="realtimeTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 PAGE VIEW 1: PLANNING PENGADAAN
+                 ========================================================= -->
+            <div id="menu-planning" class="page-view">
+                <div class="tab-container">
+                    <button class="tab-btn active" onclick="switchTab('tab-inisiasi', this)">1. Inisiasi Pengadaan</button>
+                    <button class="tab-btn" onclick="switchTab('tab-analisis-ai', this)">2. Analisis Harga (AI Engine)</button>
+                    <button class="tab-btn" onclick="switchTab('tab-approval', this)">3. Rekomendasi & Approval Pimpinan</button>
+                </div>
+
+                <!-- SUBTAB 1: INISIASI PENGADAAN -->
+                <div id="tab-inisiasi" class="tab-content">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <div class="card-title"><span>📝</span> Form Input Rencana Pengadaan Tahun 2026</div>
+                            <div>
+                                <label style="font-size:12px; font-weight:700; margin-right:10px;">PILIH JENIS FORM:</label>
+                                <select id="formTypeSelector" onchange="toggleInitiationForm()" style="padding:6px 12px; border-radius:6px; font-weight:700; border:1px solid var(--bi-navy);">
+                                    <option value="pengadaan">Form – Pengadaan (Lengkap)</option>
+                                    <option value="pembelian_langsung">Form – Pembelian Langsung (8 Kolom Ringkas)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- FORM PENGADAAN LENGKAP -->
+                        <form id="formPengadaanLengkap" onsubmit="saveInitiation('pengadaan', event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Satuan Kerja (Satker)</label>
+                                    <select required>
+                                        <option value="FDSEK">FDSEK (NTB)</option>
+                                        <option value="FPKP">FPKP (Lombok)</option>
+                                        <option value="SP">SP (Sumbawa)</option>
+                                        <option value="SHUM">SHUM</option>
+                                        <option value="PUR">PUR</option>
+                                        <option value="UMI">UMI</option>
+                                        <option value="FPPUKIS">FPPUKIS</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Pengadaan</label>
+                                    <input type="text" id="p_nama" placeholder="Contoh: Modernisasi IT Server Kantor KPw NTB" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Carry Over</label>
+                                    <select><option>Tidak</option><option>Ya</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kode Komoditi</label>
+                                    <input type="text" placeholder="KOD-IT-2026">
+                                </div>
+                                <div class="form-group">
+                                    <label>Deskripsi Komoditi Item</label>
+                                    <input type="text" placeholder="Perangkat jaringan high speed">
+                                </div>
+                                <div class="form-group">
+                                    <label>Jenis Usulan</label>
+                                    <select><option>Pengadaan Baru</option><option>Addendum</option><option>Repeat Order</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nominal HPS / Anggaran (IDR)</label>
+                                    <input type="number" id="p_nominal" placeholder="150000000" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Cara Pengadaan</label>
+                                    <select id="p_cara" required>
+                                        <option value="Penunjukan Langsung">Penunjukan Langsung</option>
+                                        <option value="Pemilihan Langsung">Pemilihan Langsung</option>
+                                        <option value="Tender">Tender</option>
+                                        <option value="Pembelian Langsung">Pembelian Langsung</option>
+                                        <option value="E-Purchasing">E-Purchasing</option>
+                                        <option value="Swakelola">Swakelola</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Merupakan Portfolio Project BI</label>
+                                    <select id="p_portfolio">
+                                        <option value="Tidak">Tidak</option>
+                                        <option value="Ya">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Blue Print / Master Plan / Rencana Induk</label>
+                                    <input type="text" placeholder="Isian Free Text (Contoh: Master Plan IT NTB 2026)">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Proyek</label>
+                                    <input type="text" placeholder="Isian Free Text (Contoh: Digitalisasi Sarana Logistik NTB)">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Sumber Produk</label>
+                                    <select><option>Lokal</option><option>Import</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Asal Vendor</label>
+                                    <select><option>Lokal NTB</option><option>Lokal Luar NTB</option><option>Asing</option></select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Kode CoA Lengkap (40 Digit)</label>
+                                    <input type="text" placeholder="5102001002000000000000000000000000000000">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nama DHA (Deskripsi Hasil Akhir)</label>
+                                    <input type="text" placeholder="Isian Free Text Uraian Hasil Akhir Pekerjaan">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Jenis Anggaran</label>
+                                    <select><option>AO</option><option>AK</option><option>CT</option></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="margin-top:15px;">SUBMIT INISIASI PENGADAAN</button>
+                        </form>
+
+                        <!-- FORM PEMBELIAN LANGSUNG RINGKAS -->
+                        <form id="formPembelianLangsung" onsubmit="saveInitiation('pembelian_langsung', event)" style="display:none;">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Satuan Kerja</label>
+                                    <select><option>FDSEK</option><option>FPKP</option><option>SP</option><option>SHUM</option><option>PUR</option><option>UMI</option><option>FPPUKIS</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Pengadaan</label>
+                                    <input type="text" id="pl_nama" placeholder="Contoh: Cetak Buklet Tenun Songket Lombok" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cara Pengadaan</label>
+                                    <select><option>Pembelian Langsung</option><option>Published Rate</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Jenis Anggaran</label>
+                                    <select><option>AO</option><option>AK</option><option>RI</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nominal (IDR)</label>
+                                    <input type="number" id="pl_nominal" placeholder="15000000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>PIC Narasumber Satker</label>
+                                    <input type="text" placeholder="Ahmad Lalang">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sumber Produk</label>
+                                    <select><option>Lokal NTB</option><option>Import</option></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Asal Vendor</label>
+                                    <select><option>Lokal NTB</option><option>Asing</option></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="margin-top:15px;">SUBMIT PEMBELIAN LANGSUNG</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 2: ANALISIS HARGA (AI ENGINE) -->
+                <div id="tab-analisis-ai" class="tab-content" style="display:none;">
+                    <div class="card">
+                        <div class="card-title" style="margin-bottom:15px;"><span>🤖</span> AI Market Price Estimator & Benchmark</div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+                            Sistem AI membandingkan usulan item pengadaan dengan database e-commerce, LKPP e-Katalog, & histori transaksi pasar wilayah NTB.
+                        </p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Pilih Item Pengadaan Untuk Dianalisis</label>
+                                <select id="aiSelectData" onchange="runAIPriceAnalysis()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="aiAnalysisResult" style="background:#F0FDF4; border:1px solid #86EFAC; padding:20px; border-radius:10px; margin-top:20px; display:none;">
+                            <h4 style="color:#166534; font-size:15px; margin-bottom:8px;">Hasil Evaluasi AI Market Comparator:</h4>
+                            <p id="aiResultText" style="font-size:13.5px; color:#14532D; line-height:1.6;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBTAB 3: REKOMENDASI & APPROVAL -->
+                <div id="tab-approval" class="tab-content" style="display:none;">
+                    <div class="card">
+                        <div class="card-title" style="margin-bottom:15px;"><span>✅</span> Daftar Inisiasi Menunggu Approval Pimpinan</div>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama Pengadaan</th>
+                                    <th>Nominal</th>
+                                    <th>Status Current</th>
+                                    <th>Tindakan Approval</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvalTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 PAGE VIEW 2: DO (PELAKSANAAN MULTI-LAYER)
+                 ========================================================= -->
+            <div id="menu-do" class="page-view">
+                
+                <div class="card">
+                    <div class="card-header-flex">
+                        <div class="card-title"><span>⚡</span> Pengadaan Disetujui & Update Status Dokumen</div>
+                    </div>
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama Pengadaan</th>
+                                <th>Cara Pengadaan</th>
+                                <th>Nilai Disetujui</th>
+                                <th>Update Progress Dokumen & Pekerjaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:15px;"><span>🤝</span> Database Vendor Terdaftar NTB (Lombok & Sumbawa)</div>
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Vendor / PT</th>
+                                <th>NPWP</th>
+                                <th>Kategori Spesialisasi</th>
+                                <th>Rating Kinerja</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PT Solusi Teknologi Mataram</td>
+                                <td>01.234.567.8-911.000</td>
+                                <td>Hardware & IT System NTB</td>
+                                <td><span style="color:#DAA520;">★ 4.9 / 5</span></td>
+                                <td><span class="badge badge-success">Terverifikasi</span></td>
+                            </tr>
+                            <tr>
+                                <td>CV Tenun & Grafika Sasak</td>
+                                <td>02.987.654.3-915.000</td>
+                                <td>Percetakan & Souvenir Khas NTB</td>
+                                <td><span style="color:#DAA520;">★ 4.8 / 5</span></td>
+                                <td><span class="badge badge-success">Terverifikasi</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- AI ASISTEN PIMPINAN -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:15px;"><span>🤖</span> AI Asisten Monitoring Pimpinan</div>
+                    <div class="ai-chat-box" id="chatBox">
+                        <div class="chat-msg ai">
+                            <div class="msg-content">
+                                Tabik Pun! Saya AI Asisten KICAU KPw BI NTB. Silakan tanyakan ringkasan status pengadaan, kendala dokumen M02, atau performa vendor di Lombok & Sumbawa.
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="aiQueryInput" placeholder="Tanyakan ke AI (Contoh: Berapa pengadaan yang belum selesai dokumen M02?)" style="flex-grow:1; padding:10px; border-radius:6px; border:1px solid var(--bi-gray-border);">
+                        <button class="btn-primary" onclick="sendAIChat()" style="width:auto; padding:10px 20px;">KIRIM</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 PAGE VIEW 4: EVALUATED & LITERASI
+                 ========================================================= -->
+            <div id="menu-evaluated" class="page-view">
+                
+                <!-- EARLY WARNING SYSTEM -->
+                <div class="card" style="border-left:5px solid #EF4444;">
+                    <div class="card-title" style="color:#DC2626; margin-bottom:15px;">
+                        <span>🚨</span> Early Warning System (EWS) Pengadaan Overdue & Cacat Dokumen
+                    </div>
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>ID Transaksi</th>
+                                <th>Nama Pengadaan</th>
+                                <th>Durasi Sejak Inisiasi</th>
+                                <th>Kategori Warning</th>
+                                <th>Tindakan Perbaikan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PL-BI-2026-004</td>
+                                <td>Pengadaan Lisensi Software Antivirus Mataram</td>
+                                <td><span class="badge badge-danger">102 Hari (> 3 Bulan)</span></td>
+                                <td>Belum Selesai Pembayaran</td>
+                                <td><button class="btn-sm btn-approve">Eskalasi Satker</button></td>
+                            </tr>
+                            <tr>
+                                <td>PL-BI-2026-012</td>
+                                <td>Renovasi Ruang Rapat Lt 2 KPW NTB</td>
+                                <td>45 Hari</td>
+                                <td><span class="badge badge-warning">Melebihi RAB (Over 8%)</span></td>
+                                <td><button class="btn-sm btn-approve">Review HPS</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- INTEGRASI PORTAL & DIRECT LINKS -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:20px;"><span>📚</span> Integrasi Portal Edukasi & Literasi Ketentuan Pengadaan</div>
+                    
+                    <a href="https://lims.corp.bi.go.id/SitePages/Home.aspx" target="_blank" class="link-card">
+                        <div class="link-info">
+                            <h4>🔗 Direct Link Portal LIMS Bank Indonesia</h4>
+                            <p>Akses ke Sistem Informasi Manajemen Logistik (LIMS BI)</p>
+                        </div>
+                        <span>Buka Link ➔</span>
+                    </a>
+
+                    <a href="https://bankindonesiagov.sharepoint.com/sites/BLINK/DMAP/SitePages/Ketentuan.aspx" target="_blank" class="link-card">
+                        <div class="link-info">
+                            <h4>📘 Ketentuan Pengadaan DMAP (Portal BLINK)</h4>
+                            <p>Dokumen Regulasi, Peraturan, dan Pedoman Pengadaan Barang/Jasa BI</p>
+                        </div>
+                        <span>Buka Link ➔</span>
+                    </a>
+
+                    <div class="link-card" style="border-left-color: var(--bi-navy);">
+                        <div class="link-info">
+                            <h4>🎓 Integrated Portal BIDARA & IVANA</h4>
+                            <p>Portal Channel Literasi & Informasi Terpadu Pengadaan Vendor & Satker NTB</p>
+                        </div>
+                        <span class="badge badge-success">Internal Integrated</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT LOGIC
+         ========================================================= -->
+    <script>
+        // DATA STATE MANAGEMENT
+        let mockData = [
+            {
+                id: 'PL-BI-2026-001',
+                nama: 'Pengadaan Perangkat Server & Network KPw NTB',
+                satker: 'FDSEK',
+                nominal: 185000000,
+                statusApproval: 'Sudah Disetujui',
+                statusDokumen: 'sudah selesai dokumen M02 dan pengadaan',
+                cara: 'Penunjukan Langsung'
+            },
+            {
+                id: 'PL-BI-2026-002',
+                nama: 'Pembelian Souvenir Tenun Songket Rapat Sumbawa',
+                satker: 'FPPUKIS',
+                nominal: 25000000,
+                statusApproval: 'Sudah Disetujui',
+                statusDokumen: 'sedang dikerjakan pengadaan',
+                cara: 'Pembelian Langsung'
+            },
+            {
+                id: 'PL-BI-2026-003',
+                nama: 'Sewa Lisensi Application Security Unit Lombok',
+                satker: 'PUR',
+                nominal: 198000000,
+                statusApproval: 'Inisiasi / Menunggu Approval Pimpinan',
+                statusDokumen: 'Dalam Proses Inisiasi',
+                cara: 'E-Purchasing'
+            }
+        ];
+
+        // 1. LOGIN HANDLER
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            document.getElementById('loggedInUser').innerText = user || 'User BI NTB';
+            document.getElementById('login-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.display = 'none';
+            }, 400);
+            renderAllTables();
+        }
+
+        function handleLogout() {
+            document.getElementById('login-overlay').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.opacity = '1';
+            }, 50);
+        }
+
+        // 2. NAVIGATION
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-link').forEach(m => m.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+
+            const titles = {
+                'dashboard-main': 'Dashboard Utama Monitoring Realtime - KPw BI NTB',
+                'menu-planning': 'Planning Pengadaan (IVRA Digital Engine)',
+                'menu-do': 'DO (Pelaksanaan Multi-layer & Monitoring)',
+                'menu-evaluated': 'Evaluated & Portal Literasi Pengadaan'
+            };
+            document.getElementById('pageTitleDisplay').innerText = titles[pageId];
+            renderAllTables();
+        }
+
+        // 3. TABS
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            element.classList.add('active');
+        }
+
+        // 4. FORM TOGGLE
+        function toggleInitiationForm() {
+            const val = document.getElementById('formTypeSelector').value;
+            if (val === 'pengadaan') {
+                document.getElementById('formPengadaanLengkap').style.display = 'block';
+                document.getElementById('formPembelianLangsung').style.display = 'none';
+            } else {
+                document.getElementById('formPengadaanLengkap').style.display = 'none';
+                document.getElementById('formPembelianLangsung').style.display = 'block';
+            }
+        }
+
+        // 5. SAVE INITIATION
+        function saveInitiation(type, e) {
+            e.preventDefault();
+            const newId = 'PL-BI-2026-0' + (mockData.length + 1);
+            let nama = type === 'pengadaan' ? document.getElementById('p_nama').value : document.getElementById('pl_nama').value;
+            let nominal = type === 'pengadaan' ? parseFloat(document.getElementById('p_nominal').value) : parseFloat(document.getElementById('pl_nominal').value);
+            let cara = type === 'pengadaan' ? document.getElementById('p_cara').value : 'Pembelian Langsung';
+
+            mockData.push({
+                id: newId,
+                nama: nama,
+                satker: 'KPw NTB',
+                nominal: nominal,
+                statusApproval: 'Inisiasi / Menunggu Approval Pimpinan',
+                statusDokumen: 'Proses Inisiasi',
+                cara: cara
+            });
+
+            alert('Data Inisiasi Berhasil Disimpan! Status: Inisiasi / Menunggu Approval Pimpinan');
+            renderAllTables();
+            switchTab('tab-approval', document.querySelectorAll('.tab-btn')[2]);
+        }
+
+        // 6. RENDER TABLES
+        function renderAllTables() {
+            document.getElementById('statInisiasi').innerText = mockData.length;
+            const approvedCount = mockData.filter(d => d.statusApproval === 'Sudah Disetujui').length;
+            document.getElementById('statDisetujui').innerText = approvedCount;
+
+            // Realtime Table
+            const rtBody = document.getElementById('realtimeTableBody');
+            rtBody.innerHTML = '';
+            mockData.forEach(item => {
+                let badgeClass = item.statusApproval === 'Sudah Disetujui' ? 'badge-success' : 'badge-warning';
+                rtBody.innerHTML += `
+                    <tr>
+                        <td><b>${item.id}</b></td>
+                        <td>${item.nama}</td>
+                        <td>${item.satker}</td>
+                        <td><span class="badge badge-info">${item.cara}</span></td>
+                        <td>Rp ${item.nominal.toLocaleString('id-ID')}</td>
+                        <td><span class="badge ${badgeClass}">${item.statusApproval}</span></td>
+                        <td><b>${item.statusDokumen}</b></td>
+                    </tr>
+                `;
+            });
+
+            // Approval Table
+            const appBody = document.getElementById('approvalTableBody');
+            appBody.innerHTML = '';
+            mockData.filter(d => d.statusApproval !== 'Sudah Disetujui').forEach(item => {
+                appBody.innerHTML += `
+                    <tr>
+                        <td><b>${item.id}</b></td>
+                        <td>${item.nama}</td>
+                        <td>Rp ${item.nominal.toLocaleString('id-ID')}</td>
+                        <td><span class="badge badge-warning">${item.statusApproval}</span></td>
+                        <td>
+                            <button class="btn-sm btn-approve" onclick="approveData('${item.id}')">Setujui (Approve)</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // DO Table
+            const doBody = document.getElementById('doTableBody');
+            doBody.innerHTML = '';
+            mockData.filter(d => d.statusApproval === 'Sudah Disetujui').forEach(item => {
+                doBody.innerHTML += `
+                    <tr>
+                        <td><b>${item.id}</b></td>
+                        <td>${item.nama}</td>
+                        <td><span class="badge badge-info">${item.cara}</span></td>
+                        <td>Rp ${item.nominal.toLocaleString('id-ID')}</td>
+                        <td>
+                            <select onchange="updateDocStatus('${item.id}', this.value)" style="padding:6px; border-radius:6px; border:1px solid var(--bi-navy); font-size:12px; font-weight:600;">
+                                <option value="sudah selesai dokumen M02 dan pengadaan" ${item.statusDokumen === 'sudah selesai dokumen M02 dan pengadaan' ? 'selected' : ''}>sudah selesai dokumen M02 dan pengadaan</option>
+                                <option value="sedang dikerjakan pengadaan" ${item.statusDokumen === 'sedang dikerjakan pengadaan' ? 'selected' : ''}>sedang dikerjakan pengadaan</option>
+                                <option value="sudah selesai pekerjaan" ${item.statusDokumen === 'sudah selesai pekerjaan' ? 'selected' : ''}>sudah selesai pekerjaan</option>
+                                <option value="sudah selesai pembayaran" ${item.statusDokumen === 'sudah selesai pembayaran' ? 'selected' : ''}>sudah selesai pembayaran</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // AI Select Populator
+            const aiSelect = document.getElementById('aiSelectData');
+            aiSelect.innerHTML = '<option value="">-- Pilih Item Pengadaan --</option>';
+            mockData.forEach(item => {
+                aiSelect.innerHTML += `<option value="${item.id}">${item.nama} (Rp ${item.nominal.toLocaleString('id-ID')})</option>`;
+            });
+        }
+
+        // 7. APPROVAL
+        function approveData(id) {
+            let item = mockData.find(d => d.id === id);
+            if (item) {
+                item.statusApproval = 'Sudah Disetujui';
+                item.statusDokumen = 'sedang dikerjakan pengadaan';
+                alert(`Pengadaan ${id} telah disetujui pimpinan dan diteruskan ke menu DO Pelaksanaan!`);
+                renderAllTables();
+            }
+        }
+
+        // 8. UPDATE STATUS
+        function updateDocStatus(id, newStatus) {
+            let item = mockData.find(d => d.id === id);
+            if (item) {
+                item.statusDokumen = newStatus;
+                alert(`Status Dokumen untuk ${id} diperbarui menjadi: "${newStatus}"`);
+                renderAllTables();
+            }
+        }
+
+        // 9. AI COMPARATOR
+        function runAIPriceAnalysis() {
+            const selectedId = document.getElementById('aiSelectData').value;
+            const resDiv = document.getElementById('aiAnalysisResult');
+            const resText = document.getElementById('aiResultText');
+
+            if (!selectedId) {
+                resDiv.style.display = 'none';
+                return;
+            }
+
+            const item = mockData.find(d => d.id === selectedId);
+            resDiv.style.display = 'block';
+
+            if (item.nominal > 150000000) {
+                resText.innerHTML = `⚠️ <b>Rekomendasi AI: HARGA TERLALU MAHAL (Perlu Penyesuaian HPS)</b><br>
+                Estimasi rata-rata pasar wilayah NTB / e-Katalog LKPP untuk item sejenis adalah Rp 135.000.000 - Rp 145.000.000. Nominal usulan (Rp ${item.nominal.toLocaleString('id-ID')}) melebihi acuan pasar sebesar ~12%. Disarankan negosiasi ulang.`;
+                resDiv.style.background = '#FEF2F2';
+                resDiv.style.borderColor = '#FCA5A5';
+            } else {
+                resText.innerHTML = `✅ <b>Rekomendasi AI: SUDAH SESUAI PASARAN NTB</b><br>
+                Nominal usulan (Rp ${item.nominal.toLocaleString('id-ID')}) berada dalam rentang wajar kisaran e-Commerce & e-Katalog LKPP regional NTB. Efisiensi anggaran diperkirakan sebesar 4.2%.`;
+                resDiv.style.background = '#F0FDF4';
+                resDiv.style.borderColor = '#86EFAC';
+            }
+        }
+
+        // 10. AI CHAT
+        function sendAIChat() {
+            const input = document.getElementById('aiQueryInput');
+            const box = document.getElementById('chatBox');
+            if (!input.value.trim()) return;
+
+            const userText = input.value;
+            box.innerHTML += `<div class="chat-msg user"><div class="msg-content">${userText}</div></div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                box.innerHTML += `
+                    <div class="chat-msg ai">
+                        <div class="msg-content">
+                            <b>AI Asisten:</b> Berdasarkan data pengadaan aktif KPw BI NTB saat ini, terdapat <b>${mockData.length}</b> total inisiasi, di mana <b>${mockData.filter(d=>d.statusApproval==='Sudah Disetujui').length}</b> telah disetujui. Terdapat 1 paket pengadaan yang berpotensi terlambat dokumen M02 di Satker FDSEK.
+                        </div>
+                    </div>
+                `;
+                box.scrollTop = box.scrollHeight;
+            }, 600);
+        }
+
+        // INITIAL LOAD
+        renderAllTables();
+    </script>
+</body>
+</html>
